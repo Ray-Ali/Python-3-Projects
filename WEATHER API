@@ -1,0 +1,26 @@
+"""
+import json 
+import urllib.request
+link = "https://www.metaweather.com/api/"
+web_link=urllib.request.urlopen(link)
+#JSON_object = json.loads(data.decode('utf-8')
+print(web_link.read() )
+"""
+#import json
+
+import requests
+location= input("Enter Location: ")
+
+link1 = requests.get("https://www.metaweather.com/api/location/search/?query={}".format(location))
+link1_json = link1.json()[0]
+
+# this is dict now and you can get any data 
+woeid = link1_json["woeid"]
+link2 = requests.get("https://www.metaweather.com/api/location/{}".format(woeid))
+link2_json = link2.json()
+
+wheather_output = link2_json["consolidated_weather"][0]
+
+print("The weather for {} is:".format(location))
+print(wheather_output["weather_state_name"]+ ": "+str(wheather_output["the_temp"]))
+#print("Weather is displayed in Celcius")
