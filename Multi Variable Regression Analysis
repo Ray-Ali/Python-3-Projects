@@ -1,0 +1,205 @@
+"""
+Authors:
+
+Rayem Ali
+Peter Han
+David Pichardo 
+The following libraries were used for this project:
+
+pandas: (providing high-performance, easy-to-use data structures and data analysis tools for the Python programming) 
+
+matplotlib- (Generate plots)
+
+numpy: (fundamental package for scientific computing with Python)
+
+statsmodel.api-(provides classes and functions for the estimation of many different 
+statistical models)
+
+seaborn: (provides high-level interface for drawing attactive informative stat graphics)
+
+"""
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import statsmodels.api as sm
+import seaborn as sns
+
+def welcome():
+    """
+    Function that prints a welcome message with emojis
+    Used unicode to implement emojis
+    """
+    print("\033[0;36;1m Welcome Users! \n")
+    print("Alcoholic Anonymous presents you: Regression Analysis")
+    print("\U0001F37B \U0001F37B \U0001F37B \U0001F37B \U0001F37B \U0001F37B")
+    print("\U0001F943 \U0001F943 \U0001F943 \U0001F943 \U0001F943 \U0001F943 \U0001F943 ")
+    print("\U0001F37E \U0001F37E \U0001F37E \U0001F37E \U0001F37E \U0001F37E \U0001F37E")
+def piecharts():
+    """
+    Creates 6 pie charts displaying the demographics for the survey:
+    
+    Distribution of:
+        Gender- Male/Female/Other
+        GPA- Grade Point Average 
+        Majors- Major 
+        Race- Ethnicity
+        Frequency of Drinks- How frequent you drink
+    """
+    pd.read_csv("sake.csv")
+    headerNames = ['AGE', 'GENDER', "Race", 'CLASS', 'MAJOR', 'Num_Credits', 'GPA', 'Consumption', 'OFTEN', "AVG_CONSUMPTION", "GPA_RANGE"]
+    people_df = pd.read_csv("sake.csv", names = headerNames)
+    
+    
+    people_df.Consumption.value_counts().plot.pie(autopct="%.f%%")
+    plt.title("Do you consume alcohol?")
+    plt.show()
+
+    
+    people_df.GPA_RANGE.value_counts().plot.pie(autopct="%.f%%")
+    plt.title("Distribution of GPA")
+    plt.show()
+    
+    people_df.MAJOR.value_counts().plot.pie(autopct="%.f%%")
+    plt.title("Distribution of Majors")
+    plt.show()
+
+    people_df.Race.value_counts().plot.pie(autopct="%.f%%")
+    plt.title("Race Distribution")
+    plt.show()
+
+    people_df.OFTEN.value_counts().plot.pie(autopct="%.f%%")
+    plt.title("FREQUENCY OF DRINKS")
+    plt.show()
+    
+def barcharts():
+    """    
+    Creates and displays 3 different barcharts comparing the gender differences in GPA and Average Drinks
+    GPA has 2 barcharts - one is weighted (out of 100%) and another is unweighted
+    
+    """
+    pd.read_csv("sake.csv")
+    headerNames = ['AGE', 'GENDER', "Race", 'CLASS', 'MAJOR', 'Num_Credits', 'GPA', 'Consumption', 'OFTEN', "AVG_CONSUMPTION", "GPA_RANGE"]
+    people_df = pd.read_csv("sake.csv", names = headerNames)
+    
+    GPAgender_df = people_df[["GENDER","GPA"]]
+    people_df.groupby(['GPA_RANGE','GENDER'])['AGE'].size().unstack().plot(kind='bar',stacked=True)
+    plt.xlabel("GPA")
+    plt.ylabel("COUNT")
+    people_df.groupby(['GPA_RANGE','GENDER'])['AGE'].size().groupby(level=0).apply(lambda x: 100*x/x.sum()).unstack().plot(kind='bar',stacked=True)
+    plt.xlabel("GPA")
+    plt.ylabel("PERCENT")
+    
+    people_df.groupby(['AVG_CONSUMPTION','GENDER'])['AGE'].size().unstack().plot(kind='bar',stacked=True)
+    plt.xlabel("Average Consumption (Drinks)")
+    plt.ylabel("COUNT")
+    plt.show()
+    
+  def scatter():
+    """
+    *UNUSED*''
+    Creates a scatterplot of the data comparing two quantitative values:
+    Independent Var. vs Dependent Var.:
+        Number of Credits vs GPA
+        Average Consumption vs GPA
+        Age vs GPA
+    """
+    pd.read_csv("sake.csv")
+    headerNames = ['AGE', 'GENDER', "Race", 'CLASS', 'MAJOR', 'Num_Credits', 'GPA', 'Consumption', 'OFTEN', "AVG_CONSUMPTION", "GPA_RANGE"]
+    people_df = pd.read_csv("sake.csv", names = headerNames)
+    
+    fig,ax=plt.subplots()
+    my_scatter_plot=ax.scatter(people_df["Num_Credits"], people_df["GPA"])
+    plt.xlabel("Number of Credits")
+    plt.ylabel("GPA")
+    plt.show()
+
+    fig,ax=plt.subplots()
+    people_df.AVG_CONSUMPTION.fillna(0)
+    my_scatter_plot=ax.scatter(people_df["AVG_CONSUMPTION"], people_df["GPA"])
+    plt.xlabel("Average Consumption (Drinks)")
+    plt.ylabel("GPA")
+    plt.show()
+
+    fig,ax=plt.subplots()
+    my_scatter_plot=ax.scatter(people_df["AGE"], people_df["GPA"])
+    plt.xlabel("Age")
+    plt.ylabel("GPA")
+    plt.show()
+def regressionscatter():
+    """
+    Creates a scatterplot of the data comparing two quantitative values and the regression line:
+    Independent Var. vs Dependent Var.:
+        Number of Credits vs GPA
+        Average Consumption vs GPA
+        Age vs GPA
+        Age vs Average Consumption
+        
+    The first three scatterplots find the impact credits, consumption, and age on GPA
+    The last scatterplot finds the impact age has on amount of alcohol consumed
+    """
+    import numpy as np
+    import seaborn as sns
+    
+    pd.read_csv("sake.csv")
+    headerNames = ['AGE', 'GENDER', "Race", 'CLASS', 'MAJOR', 'Num_Credits', 'GPA', 'Consumption', 'OFTEN', "AVG_CONSUMPTION", "GPA_RANGE"]
+    people_df = pd.read_csv("sake.csv", names = headerNames)
+
+    people_df.AVG_CONSUMPTION.fillna(0)
+    sns.lmplot (x="Num_Credits", y="GPA", data=people_df,fit_reg=True)
+    sns.lmplot(x="AVG_CONSUMPTION", y="GPA",data=people_df,fit_reg=True) 
+    sns.lmplot (x="AGE", y="GPA", data=people_df,fit_reg=True)
+    sns.lmplot (x="AGE", y="AVG_CONSUMPTION", data=people_df,fit_reg=True)
+ def regressiondata():
+    """
+    Prints the regression data for the scatterplots:
+        The relationship between credits, consumption, and age on GPA
+        The relationship between age on consumption
+    """
+    import statsmodels.formula.api as sm
+    pd.read_csv("sake.csv")
+    headerNames = ['AGE', 'GENDER', "Race", 'CLASS', 'MAJOR', 'Num_Credits', 'GPA', 'Consumption', 'OFTEN', "AVG_CONSUMPTION", "GPA_RANGE"]
+    people_df = pd.read_csv("sake.csv", names = headerNames)
+    
+    print("\nGPA vs Average Consumption + Age + Number of Credits")
+    result = sm.ols(formula="GPA ~ AVG_CONSUMPTION + AGE + Num_Credits", data=people_df).fit()
+    print(result.summary())
+    
+    print("\nAge vs Average Consumption")
+    results = sm.ols(formula="AVG_CONSUMPTION ~ AGE", data=people_df).fit()
+    print(results.summary())
+   
+  """
+Calls the welcome function and then ask's the user to input a number from 1-4
+
+Prompts the user with 4 options to choose from:
+    1- Prompts Piecharts
+    2-Prompts barchats
+    3-Prompts regression data
+    4-Prompts regression plot data with (line of best fit)
+
+
+"""
+welcome() 
+userInput = int(input("What information would you like to see?\n1)Demographics\n2)Gender Differences (Bar Chart)\n3)Regression Data\n4)Linear Regression Plots\n\nPress anything else to exit.")) 
+graphs = [1,2,3,4] 
+while userInput in graphs: 
+    if userInput == 1: 
+        piecharts() 
+    elif userInput == 2: 
+        barcharts() 
+    elif userInput == 3: 
+        regressiondata() 
+    elif userInput == 4: 
+        regressionscatter() 
+        break 
+    else: 
+        break 
+    userInput = int(input("What information would you like to see?\n1)Demographics\n2)Gender Differences (Bar Chart)\n3)Regression Data\n4)Linear Regression Plots\n\nPress anything else to exit.")) 
+  
+    
+    
+    
+    
+    
+    
+   
