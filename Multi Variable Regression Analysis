@@ -1,9 +1,7 @@
 """
-Authors:
+Author:
 
 Rayem Ali
-Peter Han
-David Pichardo 
 The following libraries were used for this project:
 
 pandas: (providing high-performance, easy-to-use data structures and data analysis tools for the Python programming) 
